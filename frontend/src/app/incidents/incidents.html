@@ -1,33 +1,72 @@
-<h2>New incident</h2>
+<h2>
+  @if (editingId !== null) {
+    Edit incident #{{ editingId }}
+  } @else {
+    New incident
+  }
+</h2>
 
 <form (ngSubmit)="save()">
   <input [(ngModel)]="form.title" name="title" placeholder="Title" required />
 
-  <!-- Built from the database: one <option> per row of the services table -->
+  <!-- Dropdowns built from the database: one <option> per row of each lookup table -->
   <select [(ngModel)]="form.serviceId" name="serviceId" required>
-    <option [ngValue]="null" disabled>Service…</option>
+    <option [ngValue]="null" disabled>Service</option>
     @for (s of services(); track s.id) {
       <option [ngValue]="s.id">{{ s.name }}</option>
     }
   </select>
 
-  <!-- YOUR TURN: severity dropdown here -->
+  <select [(ngModel)]="form.severityId" name="severityId" required>
+    <option [ngValue]="null" disabled>Severity</option>
+    @for (sev of severities(); track sev.id) {
+      <option [ngValue]="sev.id">{{ sev.name }}</option>
+    }
+  </select>
 
-  <button type="submit">Save</button>
+  <select [(ngModel)]="form.assigneeId" name="assigneeId">
+    <option [ngValue]="null">Unassigned</option>
+    @for (e of engineers(); track e.id) {
+      <option [ngValue]="e.id">{{ e.name }}</option>
+    }
+  </select>
+
+  <!-- Status only matters when editing; new incidents always start as "open" -->
+  @if (editingId !== null) {
+    <select [(ngModel)]="form.status" name="status">
+      <option value="open">open</option>
+      <option value="in_progress">in_progress</option>
+      <option value="resolved">resolved</option>
+    </select>
+  }
+
+  <button type="submit">{{ editingId !== null ? 'Update' : 'Create' }}</button>
+
+  @if (editingId !== null) {
+    <button type="button" (click)="resetForm()">Cancel</button>
+  }
 </form>
 
 <h2>Incidents</h2>
 <table>
   <tr>
-    <th>ID</th><th>Title</th><th>Service</th><th>Status</th><th>Opened</th>
+    <th>ID</th><th>Title</th><th>Service</th><th>Severity</th><th>Assignee</th>
+    <th>Status</th><th>Opened</th><th>Resolved</th><th></th>
   </tr>
   @for (inc of incidents(); track inc.id) {
     <tr>
       <td>{{ inc.id }}</td>
       <td>{{ inc.title }}</td>
       <td>{{ serviceName(inc.serviceId) }}</td>
+      <td>{{ severityName(inc.severityId) }}</td>
+      <td>{{ engineerName(inc.assigneeId) }}</td>
       <td>{{ inc.status }}</td>
       <td>{{ inc.openedAt | date:'short' }}</td>
+      <td>{{ inc.resolvedAt | date:'short' }}</td>
+      <td>
+        <button (click)="edit(inc)">Edit</button>
+        <button (click)="remove(inc)">Delete</button>
+      </td>
     </tr>
   }
 </table>

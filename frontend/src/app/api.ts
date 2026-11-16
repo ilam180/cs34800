@@ -18,5 +18,10 @@ export class Api {
     return this.http.post<Incident>('/api/incidents', req);
   }
 
-  // YOUR TURN (Part C): updateIncident(id, req) and deleteIncident(id)
+  updateIncident(id: number, req: IncidentRequest) {
+    return this.http.put<Incident>(`/api/incidents/${id}`, req);
+  }
+  deleteIncident(id: number) {
+    return this.http.delete(`/api/incidents/${id}`);
+  }
 }
