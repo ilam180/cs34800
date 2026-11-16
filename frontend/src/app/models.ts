@@ -21,3 +21,25 @@ export interface IncidentRequest {
   assigneeId: number | null;
   status: string;
 }
+
+export interface ReportRow {
+  id: number;
+  title: string;
+  service: string;
+  severity: string;
+  assignee: string | null;
+  status: string;
+  openedAt: string;
+  resolvedAt: string | null;
+}
+
+export interface ReportStats {
+  total: number;
+  unresolved: number;
+  avgResolveMinutes: number | null;
+}
+
+export interface ReportResponse {
+  stats: ReportStats;
+  rows: ReportRow[];
+}

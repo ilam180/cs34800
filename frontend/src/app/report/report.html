@@ -1,1 +1,49 @@
-<p>report works!</p>
+<h2>Incident report</h2>
+
+<form (ngSubmit)="run()">
+  <label>From <input type="date" [(ngModel)]="filter.from" name="from" required /></label>
+  <label>To <input type="date" [(ngModel)]="filter.to" name="to" required /></label>
+
+  <select [(ngModel)]="filter.serviceId" name="serviceId">
+    <option [ngValue]="null">All services</option>
+    @for (s of services(); track s.id) {
+      <option [ngValue]="s.id">{{ s.name }}</option>
+    }
+  </select>
+
+  <select [(ngModel)]="filter.severityId" name="severityId">
+    <option [ngValue]="null">All severities</option>
+    @for (s of severities(); track s.id) {
+      <option [ngValue]="s.id">{{ s.name }}</option>
+    }
+  </select>
+
+  <button type="submit">Run report</button>
+</form>
+
+@if (result(); as r) {
+  <h3>Summary</h3>
+  <p>Total incidents: {{ r.stats.total }}</p>
+  <p>Unresolved incidents: {{ r.stats.unresolved }}</p>
+  <p>Average resolve time: {{ r.stats.avgResolveMinutes ?? '-' }} minutes</p>
+
+  <h3>Incidents ({{ r.rows.length }})</h3>
+  <table>
+    <tr>
+      <th>ID</th><th>Title</th><th>Service</th><th>Severity</th>
+      <th>Assignee</th><th>Status</th><th>Opened</th><th>Resolved</th>
+    </tr>
+    @for (row of r.rows; track row.id) {
+      <tr>
+        <td>{{ row.id }}</td>
+        <td>{{ row.title }}</td>
+        <td>{{ row.service }}</td>
+        <td>{{ row.severity }}</td>
+        <td>{{ row.assignee ?? 'Unassigned' }}</td>
+        <td>{{ row.status }}</td>
+        <td>{{ row.openedAt | date:'short' }}</td>
+        <td>{{ row.resolvedAt | date:'short' }}</td>
+      </tr>
+    }
+  </table>
+}

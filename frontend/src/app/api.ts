@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Engineer, Incident, IncidentRequest, Service, Severity } from './models';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Engineer, Incident, IncidentRequest, Service, Severity, ReportResponse } from './models';
 
 @Injectable({ providedIn: 'root' })   // one shared instance for the whole app
 export class Api {
@@ -23,5 +23,15 @@ export class Api {
   }
   deleteIncident(id: number) {
     return this.http.delete(`/api/incidents/${id}`);
+  }
+
+  // add HttpParams to the existing @angular/common/http import, and ReportResponse to the models import
+
+  getReport(from: string, to: string, serviceId: number | null, severityId: number | null) {
+    // Builds ?from=...&to=...&serviceId=... and skips any filter left as "All"
+    let params = new HttpParams().set('from', from).set('to', to);
+    if (serviceId !== null) params = params.set('serviceId', serviceId);
+    if (severityId !== null) params = params.set('severityId', severityId);
+    return this.http.get<ReportResponse>('/api/reports/incidents', { params });
   }
 }
