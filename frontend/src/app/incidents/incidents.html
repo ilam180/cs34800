@@ -1,0 +1,33 @@
+<h2>New incident</h2>
+
+<form (ngSubmit)="save()">
+  <input [(ngModel)]="form.title" name="title" placeholder="Title" required />
+
+  <!-- Built from the database: one <option> per row of the services table -->
+  <select [(ngModel)]="form.serviceId" name="serviceId" required>
+    <option [ngValue]="null" disabled>Service…</option>
+    @for (s of services(); track s.id) {
+      <option [ngValue]="s.id">{{ s.name }}</option>
+    }
+  </select>
+
+  <!-- YOUR TURN: severity dropdown here -->
+
+  <button type="submit">Save</button>
+</form>
+
+<h2>Incidents</h2>
+<table>
+  <tr>
+    <th>ID</th><th>Title</th><th>Service</th><th>Status</th><th>Opened</th>
+  </tr>
+  @for (inc of incidents(); track inc.id) {
+    <tr>
+      <td>{{ inc.id }}</td>
+      <td>{{ inc.title }}</td>
+      <td>{{ serviceName(inc.serviceId) }}</td>
+      <td>{{ inc.status }}</td>
+      <td>{{ inc.openedAt | date:'short' }}</td>
+    </tr>
+  }
+</table>
