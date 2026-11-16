@@ -1,0 +1,32 @@
+### Create
+POST http://localhost:8080/api/incidents
+Content-Type: application/json
+
+{"title": "Test outage", "serviceId": 1, "severityId": 2}
+
+### Claim (use the id the create returned) - first time: 200
+POST http://localhost:8080/api/incidents/601/claim
+Content-Type: application/json
+
+{"engineerId": 3}
+
+### Claim again - should be 409 Conflict
+POST http://localhost:8080/api/incidents/601/claim
+Content-Type: application/json
+
+{"engineerId": 5}
+
+### Resolve it
+PUT http://localhost:8080/api/incidents/601
+Content-Type: application/json
+
+{"title": "Test outage", "serviceId": 1, "severityId": 2, "assigneeId": 3, "status": "resolved"}
+
+### Delete
+DELETE http://localhost:8080/api/incidents/601
+
+### Bad foreign key - Postgres rejects it
+POST http://localhost:8080/api/incidents
+Content-Type: application/json
+
+{"title": "Bad", "serviceId": 999, "severityId": 2}
